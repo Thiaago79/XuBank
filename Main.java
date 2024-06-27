@@ -1,16 +1,11 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import models.Cliente;
-// import models.Conta;
 import models.Corrente;
 import models.Investimento;
 import models.Poupanca;
@@ -19,8 +14,6 @@ import models.RendaFixa;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
-        
 
         System.out.println("Cadastro de Clientes");
         System.out.println("--------------------");
@@ -37,7 +30,7 @@ public class Main {
 
             if (resposta.equals("1")) {
                 Cliente cliente = Cliente.criarNovoCliente();
-                cliente.salvarCliente();                
+                cliente.salvarCliente();
                 System.out.println("Cliente cadastrado com sucesso!");
             } else if (resposta.equals("2")) {
                 System.out.print("Digite seu CPF: ");
@@ -54,7 +47,7 @@ public class Main {
 
                     String tipoConta = scanner.nextLine();
 
-                    Cliente cliente = Cliente.pesquisarCliente(cpf);
+                    Cliente cliente = pesquisarCliente(cpf); // Usar a função modificada
                     if (cliente != null) {
                         switch (tipoConta) {
                             case "1":
@@ -66,7 +59,7 @@ public class Main {
                                     System.out.println("Valor inválido para o limite. Utilizando valor padrão (0.0).");
                                 }
                                 scanner.nextLine(); // Limpar o buffer após ler o número
-                                
+
                                 Corrente contaCorrente = new Corrente(cliente, limite);
                                 cliente.criarConta(contaCorrente);
                                 System.out.println("Conta Corrente criada com sucesso!");
@@ -102,7 +95,7 @@ public class Main {
                 String senha = scanner.nextLine();
 
                 if (Cliente.senhaExiste(cpf, senha)) {
-                    Cliente cliente = Cliente.pesquisarCliente(cpf);
+                    Cliente cliente = pesquisarCliente(cpf); // Usar a função modificada
                     if (cliente != null) {
                         System.out.println("Bem-vindo, " + cliente.getNome() + "! Escolha uma opção:");
                         System.out.println("1 - Sacar");
@@ -150,12 +143,11 @@ public class Main {
         scanner.close();
     }
 
-    public static Cliente pesquis(String cpf) {
-
+    public static Cliente pesquisarCliente(String cpf) {
         List<Cliente> clientes = lerClientesDoArquivo("clientes.txt");
 
-        for(Cliente cliente : clientes){
-            if(cliente.getCpf().equals(cpf)){
+        for (Cliente cliente : clientes) {
+            if (cliente.getCpf().equals(cpf)) {
                 return cliente;
             }
         }
@@ -184,5 +176,4 @@ public class Main {
 
         return clientes;
     }
-    
 }

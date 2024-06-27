@@ -58,19 +58,17 @@ abstract class Conta {
 
     public abstract void extrato(String tipo, double valor);
 
-    public static int num(){
+    public static int num() {
         List<Conta> contas = lerContasDeArquivo();
-        int maiorAtual = 1;
-
-        for(Conta conta : contas){
-            
-            if(conta.getNumero() >= maiorAtual){
+        int maiorAtual = 0;
+    
+        for (Conta conta : contas) {
+            if (conta.getNumero() >= maiorAtual) {
                 maiorAtual = conta.getNumero();
             }
         }
-
-               
-        return maiorAtual+1;
+    
+        return maiorAtual + 1;
     }
 
     public static List<Conta> lerContasDeArquivo() {
@@ -84,9 +82,9 @@ abstract class Conta {
                     contas.add(criarContaCorrente(line));
                 } else if (line.startsWith("Conta Poupanca")) {
                     contas.add(criarContaPoupanca(line));
-                } else if (line.startsWith("Renda Fixa")) {
+                } else if (line.startsWith("Conta Renda Fixa")) {
                     contas.add(criarContaRendaFixa(line));
-                } else if (line.startsWith("Investimento")) {
+                } else if (line.startsWith("Conta Investimento")) {
                     contas.add(criarContaInvestimento(line));
                 }
                 line = reader.readLine();
@@ -110,6 +108,7 @@ abstract class Conta {
         Cliente cliente = extrairCliente(line);
         int numero = extrairNumeroConta(line);
         double saldo = extrairSaldo(line);
+        
         return new Poupanca(cliente, numero, saldo);
     }
 
@@ -132,23 +131,18 @@ abstract class Conta {
         double taxaFixa = extrairTaxaFixa(line);
         double rendimentoMensal = extrairRendimentoMensal(line);
         double valorRendimentoMensal = extrairValorRendimentoMensal(line);
+        System.out.println("Num inv" +numero);
         return new Investimento(cliente, numero, saldo, imposto, taxaFixa, rendimentoMensal, valorRendimentoMensal);
     }
 
-    private static Cliente extrairCliente(String line) {
+    public static Cliente extrairCliente(String cpf) {
         List<Cliente> clientes = lerClientesDoArquivo();
-
-        String inicioMarcador = "Cliente: ";
-        String fimMarcador = line.contains("Limite de Credito") ? ", Limite de Credito: " : ", Rendimento Mensal: ";
-        String cpf = extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador);
-
         for (Cliente cliente : clientes) {
             if (cliente.getCpf().equals(cpf)) {
                 return cliente;
             }
         }
-
-        throw new Error("Cliente nao existe");
+        return null; // Cliente não encontrado
     }
 
     private static int extrairNumeroConta(String line) {
@@ -187,8 +181,20 @@ abstract class Conta {
     }
 
     private static double extrairValorRendimentoMensal(String line) {
-        String inicioMarcador = "Valor do Rendimento Mensal";
-        return Double.parseDouble(extrairValorEntreMarcadores(line, inicioMarcador, ""));
+        String[] partes = line.split(", ");
+        for (String parte : partes) {
+            if (parte.startsWith("Rendimento Mensal: ")) {
+                String valorRendimento = parte.substring("Rendimento Mensal: ".length()).trim();
+                // Remover caracteres não numéricos extras, se houver
+                valorRendimento = valorRendimento.replaceAll("[^\\d.]", ""); // Remove tudo exceto dígitos e ponto
+                try {
+                    return Double.parseDouble(valorRendimento);
+                } catch (NumberFormatException e) {
+                    System.err.println("Erro ao converter rendimento mensal: " + e.getMessage());
+                }
+            }
+        }
+        return 0.0; // Valor padrão se não encontrar ou ocorrer erro na conversão
     }
 
     protected static String extrairValorEntreMarcadores(String linha, String marcadorInicio, String marcadorFim) {
@@ -208,16 +214,17 @@ abstract class Conta {
 
     public static List<Cliente> lerClientesDoArquivo() {
         List<Cliente> clientes = new ArrayList<>();
-
+    
         try (BufferedReader reader = new BufferedReader(new FileReader("clientes.txt"))) {
             String linha;
+    
             while ((linha = reader.readLine()) != null) {
                 if (linha.startsWith("Nome: ") && linha.contains("CPF: ") && linha.contains("Senha: ")) {
                     String[] partes = linha.split(", ");
                     String nome = partes[0].substring("Nome: ".length()).trim();
                     String cpf = partes[1].substring("CPF: ".length()).trim();
                     String senha = partes[2].substring("Senha: ".length()).trim();
-
+    
                     Cliente cliente = new Cliente(nome, cpf, senha);
                     clientes.add(cliente);
                 }
@@ -225,8 +232,18 @@ abstract class Conta {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+    
         return clientes;
+    }
+
+    public static Cliente pesquisarCliente(String cpf) {
+        List<Cliente> clientes = lerClientesDoArquivo();
+        for (Cliente cliente : clientes) {
+            if (cliente.getCpf().equals(cpf)) {
+                return cliente;
+            }
+        }
+        return null;
     }
 
     public String infoConta() {
