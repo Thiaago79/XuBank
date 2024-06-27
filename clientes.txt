@@ -1,0 +1,8 @@
+Nome: thi, CPF: 12345678912, Senha: senha
+Nome: tp, CPF: 98765432198, Senha: senha
+Conta Corrente: Número: 1, Saldo: 0.0, Cliente: 12345678912, Limite de Credito: 200.0
+Nome: tr, CPF: 123, Senha: senha
+Conta Corrente: Número: 2, Saldo: 0.0, Cliente: 12345678912, Limite de Credito: 200.0
+
+Conta Poupanca: Número: 3, Saldo: 0.0, Cliente: 123, Rendimento Mensal: 0.0
+
