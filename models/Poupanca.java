@@ -1,7 +1,7 @@
 package models;
 
-import java.util.Date;
 import java.util.Calendar;
+import java.util.Date;
 
 public class Poupanca extends Conta {
     private double rendimentoMensal;
@@ -12,7 +12,7 @@ public class Poupanca extends Conta {
     }
 
     public Poupanca(Cliente cliente, int numero, double saldo) {
-        super(cliente,numero, saldo); 
+        super(cliente, numero, saldo);
         this.rendimentoMensal = 0;
     }
 
@@ -24,46 +24,41 @@ public class Poupanca extends Conta {
         this.rendimentoMensal = rendimentoMensal;
     }
 
-    public double sacar(double valorSacar){
-
+    @Override
+    public double sacar(double valorSacar) {
         double saldo = super.getSaldo();
 
-        if(valorSacar - saldo > 0){
-            saldo -= valorSacar;
-        }else if(saldo == 0){
-            throw new Error("Conta sem saldo");
-        }else{
+        if (valorSacar > saldo) {
             throw new Error("Valor a sacar maior que o saldo");
         }
 
+        saldo -= valorSacar;
         super.setSaldo(saldo);
         extrato("Saque", valorSacar);
 
         return saldo;
     }
 
-    public double depositar(double valorSacar){
-        
+    @Override
+    public double depositar(double valorDepositar) {
         double saldo = super.getSaldo();
 
-        saldo += valorSacar;
-
+        saldo += valorDepositar;
         super.setSaldo(saldo);
-        extrato("Deposito", valorSacar);
+        extrato("Deposito", valorDepositar);
 
         return saldo;
     }
 
-    public double rendimentoMensal(){
-
+    @Override
+    public double rendimentoMensal() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        int diaDoMes = calendar.get(Calendar.DAY_OF_MONTH);        
+        int diaDoMes = calendar.get(Calendar.DAY_OF_MONTH);
 
-        if(diaDoMes == 1){
+        if (diaDoMes == 1) {
             double saldo = super.getSaldo();
-            
-            double rendimento = saldo * 0.6;
+            double rendimento = saldo * 0.6; // Exemplo de cálculo de rendimento mensal
             saldo += rendimento;
 
             super.setSaldo(saldo);
@@ -75,7 +70,8 @@ public class Poupanca extends Conta {
         return this.rendimentoMensal;
     }
 
-    public void extrato(String tipo, double valor){
+    @Override
+    public void extrato(String tipo, double valor) {
         super.operacoes.add(new Operacao(tipo, valor));
     }
 

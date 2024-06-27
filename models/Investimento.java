@@ -11,13 +11,7 @@ public class Investimento extends Conta {
 
     public Investimento(Cliente cliente) {
         super(cliente);
-
-        if(validarValor(valorRendimentoMensal) == false){
-            throw new Error("Não é possivel atribuir esse valor ao rendimento mensal");
-        }else{
-            this.valorRendimentoMensal = valorRendimentoMensal;
-        }
-
+        this.valorRendimentoMensal = 0.002;
         this.imposto = 0.225;
         this.taxaFixa = 0.01;
         this.rendimentoMensal = 0;        
@@ -60,7 +54,11 @@ public class Investimento extends Conta {
     }
 
     public void setValorRendimentoMensal(double valorRendimentoMensal) {
-        this.valorRendimentoMensal = valorRendimentoMensal;
+        if(validarValor(valorRendimentoMensal) == false){
+            throw new Error("Não é possivel atribuir esse valor ao rendimento mensal");
+        }else{
+            this.valorRendimentoMensal = valorRendimentoMensal;
+        }
     }
 
     public boolean validarValor(double valor){
@@ -139,6 +137,6 @@ public class Investimento extends Conta {
 
     @Override
     public String infoConta() {
-        return "Investimento: " + super.infoConta() + "Imposto: " + imposto + ", Taxa de Rendimento Mensal: " + taxaFixa + ", Rendimento Mensal: " + rendimentoMensal + "Valor do Rendimento Mensal" + valorRendimentoMensal + "\n";
+        return "Conta Investimento: " + super.infoConta() + ", Imposto: " + imposto + ", Taxa de Rendimento Mensal: " + taxaFixa + ", Rendimento Mensal: " + rendimentoMensal + ", Valor do Rendimento Mensal: " + valorRendimentoMensal + "\n";
     }
 }

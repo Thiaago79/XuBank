@@ -1,8 +1,15 @@
-Nome: thi, CPF: 12345678912, Senha: senha
 Nome: tp, CPF: 98765432198, Senha: senha
-Conta Corrente: Número: 1, Saldo: 0.0, Cliente: 12345678912, Limite de Credito: 200.0
 Nome: tr, CPF: 123, Senha: senha
-Conta Corrente: Número: 2, Saldo: 0.0, Cliente: 12345678912, Limite de Credito: 200.0
-
 Conta Poupanca: Número: 3, Saldo: 0.0, Cliente: 123, Rendimento Mensal: 0.0
+Conta Investimento: Número: 4, Saldo: 0.0, Cliente: 123, Imposto: 0.225, Taxa de Rendimento Mensal: 0.01, Rendimento Mensal: 0.0, Valor do Rendimento Mensal 0.0
+
+Conta Poupanca: Número: 4, Saldo: 0.0, Cliente: 123, Rendimento Mensal: 0.0
+
+Conta Poupanca: Número: 5, Saldo: 0.0, Cliente: 123, Rendimento Mensal: 0.0
+
+Conta Corrente: Número: 6, Saldo: 0.0, Cliente: 123, Limite de Credito: 12.0
+
+Conta Renda Fixa: Número: 7, Saldo: 0.0, Cliente: 123, Imposto: 0.15, Taxa Fixa: 20.0, Rendimento Mensal: 0.0, Valor do Rendimento Mensal: 0.005
+
+Conta Investimento: Número: 7, Saldo: 0.0, Cliente: 123, Imposto: 0.225, Taxa de Rendimento Mensal: 0.01, Rendimento Mensal: 0.0, Valor do Rendimento Mensal: 0.002
 

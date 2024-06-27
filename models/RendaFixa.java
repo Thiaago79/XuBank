@@ -11,20 +11,14 @@ public class RendaFixa extends Conta{
 
     public RendaFixa(Cliente cliente) {
 
-        super(cliente);  
-        
-        if(validarValor(valorRendimentoMensal) == false){
-            throw new Error("Não é possivel atribuir esse valor ao rendimento mensal");
-        }else{
-            this.valorRendimentoMensal = valorRendimentoMensal;
-        }
-        
+        super(cliente);     
+        this.valorRendimentoMensal = 0.005;
         this.imposto = 0.15;
         this.taxaFixa = 20;
         this.rendimentoMensal = 0;
     }
 
-    public RendaFixa(Cliente cliente, int numero, double saldo,double imposto, double taxaFixa, double rendimentoMensal, double valorRendimentoMensal) {
+    public RendaFixa(Cliente cliente, int numero, double saldo, double imposto, double taxaFixa, double rendimentoMensal, double valorRendimentoMensal) {
         super(cliente,numero, saldo);        
         this.imposto = imposto;
         this.taxaFixa = taxaFixa;
@@ -70,7 +64,11 @@ public class RendaFixa extends Conta{
     }
 
     public void setValorRendimentoMensal(double valorRendimentoMensal) {
-        this.valorRendimentoMensal = valorRendimentoMensal;
+        if(validarValor(valorRendimentoMensal) == false){
+            throw new Error("Não é possivel atribuir esse valor ao rendimento mensal");
+        }else{
+            this.valorRendimentoMensal = valorRendimentoMensal;
+        }
     }
 
     public double sacar(double valorSacar){
@@ -141,6 +139,6 @@ public class RendaFixa extends Conta{
 
     @Override
     public String infoConta() {
-        return "Renda Fixa: " + super.infoConta() + "Imposto: " + imposto + ", Taxa Fixa: " + taxaFixa + ", Rendimento Mensal: " + rendimentoMensal + "Valor do Rendimento Mensal" + valorRendimentoMensal + "\n";
+        return "Conta Renda Fixa: " + super.infoConta() + ", Imposto: " + imposto + ", Taxa Fixa: " + taxaFixa + ", Rendimento Mensal: " + rendimentoMensal + ", Valor do Rendimento Mensal: " + valorRendimentoMensal + "\n";
     }
 }

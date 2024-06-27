@@ -77,13 +77,13 @@ public class Main {
                                 System.out.println("Poupança criada com sucesso!");
                                 break;
                             case "3":
-                                // Conta rendaFixa = new RendaFixa("003", 0.0, cliente, 0.005);
-                                // cliente.criarConta(rendaFixa);
+                                RendaFixa rendaFixa = new RendaFixa(cliente);
+                                cliente.criarConta(rendaFixa);
                                 System.out.println("Renda Fixa criada com sucesso!");
                                 break;
                             case "4":
-                                // Conta investimento = new Investimento("004", 0.0, cliente, 0.0002);
-                                // cliente.criarConta(investimento);
+                                Investimento investimento = new Investimento(cliente);
+                                cliente.criarConta(investimento);
                                 System.out.println("Investimento criado com sucesso!");
                                 break;
                             default:
