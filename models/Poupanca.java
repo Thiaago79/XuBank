@@ -1,7 +1,12 @@
 package models;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class Poupanca extends Conta {
     private double rendimentoMensal;
@@ -34,7 +39,9 @@ public class Poupanca extends Conta {
 
         saldo -= valorSacar;
         super.setSaldo(saldo);
-        extrato("Saque", valorSacar);
+
+        Operacao operacao = new Operacao("Saque", valorSacar, super.getNumero());
+        editarContaNoArquivo(getNumero(), operacao);
 
         return saldo;
     }
@@ -45,7 +52,9 @@ public class Poupanca extends Conta {
 
         saldo += valorDepositar;
         super.setSaldo(saldo);
-        extrato("Deposito", valorDepositar);
+
+        Operacao operacao = new Operacao("Deposito", valorDepositar, super.getNumero());
+        editarContaNoArquivo(getNumero(), operacao);
 
         return saldo;
     }
@@ -58,21 +67,46 @@ public class Poupanca extends Conta {
 
         if (diaDoMes == 1) {
             double saldo = super.getSaldo();
-            double rendimento = saldo * 0.6; // Exemplo de cálculo de rendimento mensal
+            double rendimento = saldo * 0.6;
             saldo += rendimento;
 
             super.setSaldo(saldo);
             this.rendimentoMensal = rendimento;
 
-            extrato("Rendimento", rendimento);
+            Operacao opera = new Operacao("Rendimento", rendimento, super.getNumero());
+            editarContaNoArquivo(getNumero(), opera);
         }
 
         return this.rendimentoMensal;
     }
 
+    public void editarContaNoArquivo(int numeroConta, Operacao operacao) {
+        try {
+            List<String> linhas = Files.readAllLines(Paths.get("clientes.txt"), StandardCharsets.UTF_8);
+
+            for (int i = 0; i < linhas.size(); i++) {
+                if (linhas.get(i).startsWith("Conta Poupanca: Número: " + numeroConta)) {
+                    String[] partes = linhas.get(i).split(", Saldo: ");
+                    String[] saldoParte = partes[1].split(", Cliente: ");
+                    String novoSaldo = Double.toString(Double.parseDouble(saldoParte[0]) - operacao.getValor());
+                    linhas.set(i, partes[0] + ", Saldo: " + novoSaldo + ", Cliente: " + saldoParte[1]);
+
+                    linhas.add(operacao.infoOperacao());
+
+                    break;
+                }
+            }
+
+            Files.write(Paths.get("clientes.txt"), linhas, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     @Override
-    public void extrato(String tipo, double valor) {
-        super.operacoes.add(new Operacao(tipo, valor));
+    public void extrato(String tipo, double valor, int numConta) {
+        super.operacoes.add(new Operacao(tipo, valor, numConta));
     }
 
     @Override

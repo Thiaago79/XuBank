@@ -1,12 +1,17 @@
 package models;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-abstract class Conta {
+public abstract class Conta {
     private int numero;
     private double saldo;
     private Cliente cliente;
@@ -56,7 +61,7 @@ abstract class Conta {
 
     public abstract double rendimentoMensal();
 
-    public abstract void extrato(String tipo, double valor);
+    public abstract void extrato(String tipo, double valor, int numConta);
 
     public static int num() {
         List<Conta> contas = lerContasDeArquivo();
@@ -69,6 +74,105 @@ abstract class Conta {
         }
     
         return maiorAtual + 1;
+    }
+
+    public static Cliente clienteRico() {
+        List<Cliente> clientes = lerClientesDoArquivo();
+        List<Conta> contas = lerContasDeArquivo();
+        double maiorSaldo = 0;
+        Cliente clienteRico = null;
+    
+        // Itera sobre todos os clientes
+        for (Cliente cliente : clientes) {
+            double saldoTotalCliente = 0;
+            System.out.println("Nome Rico: " + cliente.getNome());
+    
+            // Itera sobre todas as contas
+            for (Conta conta : contas) {
+                if (conta.getCliente() != null && conta.getCliente().getCpf().equals(cliente.getCpf())) {
+                    saldoTotalCliente += conta.getSaldo();
+                    System.out.println("Conta Saldo: " + conta.getSaldo());
+                    System.out.println("Cliente: " + conta.getCliente().getCpf());
+                    System.out.println("Saldo Rico: " + saldoTotalCliente);
+                }
+            }
+    
+            // Verifica se o saldo total do cliente atual é maior que o maior saldo registrado até agora
+            if (saldoTotalCliente > maiorSaldo) {
+                maiorSaldo = saldoTotalCliente;
+                clienteRico = cliente;
+            }
+        }
+    
+        // Após percorrer todos os clientes e contas, imprime o cliente com o maior saldo ou avisa se nenhum cliente foi encontrado
+        if (clienteRico != null) {
+            System.out.println("Cliente com maior saldo: " + clienteRico.getNome());
+        } else {
+            System.out.println("Nenhum cliente encontrado.");
+        }
+    
+        // Retorna o cliente com o maior saldo encontrado (ou null se nenhum cliente foi encontrado)
+        return clienteRico;
+    }
+
+
+    public static String validarTipoConta(int numeroConta) {
+        List<Conta> contas = lerContasDeArquivo();
+
+        for (Conta conta : contas) {
+            if (conta.getNumero() == numeroConta) {
+                if (conta instanceof Corrente) {
+                    Corrente contaCor = new Corrente(null, numeroConta);
+                    return "Corrente";
+                } else if (conta instanceof Poupanca) {
+                    return "Poupanca";
+                } else if (conta instanceof RendaFixa) {
+                    return "Renda Fixa";
+                } else if (conta instanceof Investimento) {
+                    return "Investimento";
+                }
+            }
+        }
+
+        return "Conta não encontrada";
+    }
+
+    public void editarContaNoArquivo(int numeroConta, double novoSaldo) {
+        File arquivo = new File("clientes.txt");
+        List<String> linhas = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(arquivo))) {
+            String linha;
+            while ((linha = reader.readLine()) != null) {
+                if (linha.startsWith("Conta Corrente: Número: " + numeroConta)) {
+                    linha = linha.replaceFirst("Saldo: [0-9]+\\.[0-9]+", "Saldo: " + novoSaldo);
+                }
+                linhas.add(linha);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Escreve todas as linhas de volta no arquivo
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivo))) {
+            for (String linha : linhas) {
+                writer.write(linha + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Conta pesquisarConta(int numConta){
+        List<Conta> contas = lerContasDeArquivo();
+
+        for(Conta conta : contas){
+            if(conta.getNumero() == numConta){
+                return conta;
+            }
+        }
+
+        throw new Error("Conta não existe");
     }
 
     public static List<Conta> lerContasDeArquivo() {
@@ -131,7 +235,6 @@ abstract class Conta {
         double taxaFixa = extrairTaxaFixa(line);
         double rendimentoMensal = extrairRendimentoMensal(line);
         double valorRendimentoMensal = extrairValorRendimentoMensal(line);
-        System.out.println("Num inv" +numero);
         return new Investimento(cliente, numero, saldo, imposto, taxaFixa, rendimentoMensal, valorRendimentoMensal);
     }
 

@@ -6,27 +6,39 @@ public class Operacao {
     private String tipo;
     private double valor;
     private Date data;
+    private int conta;
 
-    public Operacao(String tipo, double valor) {
+    public Operacao(String tipo, double valor, int conta) {
         this.tipo = tipo;
         this.valor = valor;
         this.data = new Date();
+        this.conta = conta;
+    }
+
+    public Operacao(String tipo, double valor, Date data, int conta) {
+        this.tipo = tipo;
+        this.valor = valor;
+        this.data = data;
+        this.conta = conta;
     }
 
     public String getTipo() {
         return tipo;
     }
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
+
     public double getValor() {
         return valor;
     }
-    public void setValor(double valor) {
-        this.valor = valor;
+
+    public Date getData() {
+        return data;
+    }
+    
+    public int getConta() {
+        return conta;
     }
 
     public String infoOperacao() {
-        return "Operacao: Tipo = " + tipo + ", Valor = " + valor + ", Data = " + data.toString();
+        return "Operacao " + tipo + ", Valor: " + valor + ", Data: " + data.toString()+ ", Conta: " + conta;
     }
 }
