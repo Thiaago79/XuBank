@@ -41,7 +41,7 @@ public class Poupanca extends Conta {
         super.setSaldo(saldo);
 
         Operacao operacao = new Operacao("Saque", valorSacar, super.getNumero());
-        editarContaNoArquivo(getNumero(), operacao);
+        editarContaNoArquivo(getNumero(), operacao, saldo);
 
         return saldo;
     }
@@ -54,7 +54,7 @@ public class Poupanca extends Conta {
         super.setSaldo(saldo);
 
         Operacao operacao = new Operacao("Deposito", valorDepositar, super.getNumero());
-        editarContaNoArquivo(getNumero(), operacao);
+        editarContaNoArquivo(getNumero(), operacao, saldo);
 
         return saldo;
     }
@@ -74,13 +74,13 @@ public class Poupanca extends Conta {
             this.rendimentoMensal = rendimento;
 
             Operacao opera = new Operacao("Rendimento", rendimento, super.getNumero());
-            editarContaNoArquivo(getNumero(), opera);
+            editarContaNoArquivo(getNumero(), opera, saldo);
         }
 
         return this.rendimentoMensal;
     }
 
-    public void editarContaNoArquivo(int numeroConta, Operacao operacao) {
+    public void editarContaNoArquivo(int numeroConta, Operacao operacao, double novoSaldo) {
         try {
             List<String> linhas = Files.readAllLines(Paths.get("clientes.txt"), StandardCharsets.UTF_8);
 
@@ -88,8 +88,8 @@ public class Poupanca extends Conta {
                 if (linhas.get(i).startsWith("Conta Poupanca: Número: " + numeroConta)) {
                     String[] partes = linhas.get(i).split(", Saldo: ");
                     String[] saldoParte = partes[1].split(", Cliente: ");
-                    String novoSaldo = Double.toString(Double.parseDouble(saldoParte[0]) - operacao.getValor());
-                    linhas.set(i, partes[0] + ", Saldo: " + novoSaldo + ", Cliente: " + saldoParte[1]);
+                    String newSaldo = Double.toString(novoSaldo);
+                    linhas.set(i, partes[0] + ", Saldo: " + newSaldo + ", Cliente: " + saldoParte[1]);
 
                     linhas.add(operacao.infoOperacao());
 

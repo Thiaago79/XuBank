@@ -6,10 +6,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
 public abstract class Conta {
     private int numero;
@@ -76,9 +79,47 @@ public abstract class Conta {
         return maiorAtual + 1;
     }
 
-    public static Cliente clienteRico() {
-        List<Cliente> clientes = lerClientesDoArquivo();
+    public static void extratoConta(int numConta) {
+        List<Operacao> operacoes = lerOperacoesDeArquivo();
+        System.out.println("Extrato do Último Mês");
+        List<Operacao> opera = new ArrayList<>();
+    
+        Date dataAtual = new Date();
+    
+        Calendar calendario = Calendar.getInstance();
+        calendario.setTime(dataAtual);
+        calendario.add(Calendar.MONTH, -1);
+    
+        Date dataLimite = calendario.getTime();
+    
+        for (Operacao operacao : operacoes) {
+            if (operacao.getConta() == numConta && operacao.getData().after(dataLimite)) {
+                opera.add(operacao);
+            }
+        }
+    
+        if (opera.isEmpty()) {
+            System.out.println("Nenhuma operação encontrada no último mês.");
+        } else {
+            for (Operacao operacao : opera) {
+                System.out.println("---------------------");
+                System.out.println("Tipo: " + operacao.getTipo() + " Valor: " + operacao.getValor() + " Data: " + operacao.getData());
+            }
+        }
+    }
+
+    public static void impriConta(){
         List<Conta> contas = lerContasDeArquivo();
+
+        for(Conta conta : contas){
+            System.out.println("Cliente Conta: "+conta.getCliente());
+        }
+    }
+
+    public static Cliente clienteRico() {
+        List<Cliente> clientes = Cliente.lerClientesDoArquivo();
+        List<Conta> contas = lerContasDeArquivo();
+
         double maiorSaldo = 0;
         Cliente clienteRico = null;
     
@@ -238,14 +279,21 @@ public abstract class Conta {
         return new Investimento(cliente, numero, saldo, imposto, taxaFixa, rendimentoMensal, valorRendimentoMensal);
     }
 
-    public static Cliente extrairCliente(String cpf) {
-        List<Cliente> clientes = lerClientesDoArquivo();
+    public static Cliente extrairCliente(String line) {
+        List<Cliente> clientes = Cliente.lerClientesDoArquivo();
+
+        String inicioMarcador = "Cliente: ";
+        String fimMarcador = ", ";
+        String cpf = extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador);
+        System.out.println(cpf);
+
+
         for (Cliente cliente : clientes) {
             if (cliente.getCpf().equals(cpf)) {
                 return cliente;
             }
         }
-        return null; // Cliente não encontrado
+        return null;
     }
 
     private static int extrairNumeroConta(String line) {
@@ -348,6 +396,66 @@ public abstract class Conta {
         }
         return null;
     }
+
+    public static List<Operacao> lerOperacoesDeArquivo() {
+        List<Operacao> operacoes = new ArrayList<>();
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new FileReader("clientes.txt"));
+            String line = reader.readLine();
+            while (line != null) {
+                if (line.startsWith("Operacao")) {
+                    operacoes.add(criarOperacao(line));
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return operacoes;
+    }
+    
+    private static Operacao criarOperacao(String line){
+        String tipo = extrairTipoExtrato(line);
+        double valor = extrairValorExtrato(line);
+        Date data = extrairDataExtrato(line);
+        int conta = extrairContaExtrato(line);
+        return new Operacao(tipo, valor, data, conta);
+    }
+
+    private static Date extrairDataExtrato(String line) {
+        String inicioMarcador = "Data: ";
+        String fimMarcador = ",";
+        String dataStr = extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador);
+        
+        SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+        try {
+            return format.parse(dataStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    private static String extrairTipoExtrato(String line) {
+        String inicioMarcador = "Operacao ";
+        String fimMarcador = ",";
+        return extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador);
+    }
+    
+    private static double extrairValorExtrato(String line) {
+        String inicioMarcador = "Valor: ";
+        String fimMarcador = ",";
+        return Double.parseDouble(extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador));
+    }
+    
+    private static int extrairContaExtrato(String line) {
+        String inicioMarcador = "Conta: ";
+        String fimMarcador = ".";
+        return Integer.parseInt(extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador));
+    }
+    
 
     public String infoConta() {
         return "Número: " + numero + ", Saldo: " + saldo + ", Cliente: " + cliente.getCpf();

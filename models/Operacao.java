@@ -39,6 +39,6 @@ public class Operacao {
     }
 
     public String infoOperacao() {
-        return "Operacao " + tipo + ", Valor: " + valor + ", Data: " + data.toString()+ ", Conta: " + conta;
+        return "Operacao " + tipo + ", Valor: " + valor + ", Data: " + data.toString()+ ", Conta: " + conta +".";
     }
 }

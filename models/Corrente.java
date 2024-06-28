@@ -32,14 +32,17 @@ public class Corrente extends Conta {
         double saldo = super.getSaldo();
 
         if (saldo < 0) {
-            saldo = saldo - (saldo * 0.03) - 10;
+            double tarifa = saldo * 0.03;
+            saldo = (saldo - tarifa) - 10;
             saldo = saldo + valorDepositar;
+            System.out.println("Slaso atual "+saldo);
             Operacao operacao = new Operacao("Deposito", valorDepositar, super.getNumero());
-            editarContaNoArquivo(getNumero(), operacao);
+            editarContaNoArquivo(getNumero(), operacao, saldo);
         } else {
             saldo = saldo + valorDepositar;
-            Operacao operacao = new Operacao("Deposito", valorDepositar, super.getNumero());
-            editarContaNoArquivo(getNumero(), operacao);
+            System.out.println("Slaso atual "+saldo);
+            Operacao operacao = new Operacao("Deposito", saldo, super.getNumero());
+            editarContaNoArquivo(getNumero(), operacao, saldo);
         }
 
         super.setSaldo(saldo);
@@ -49,17 +52,25 @@ public class Corrente extends Conta {
 
     public double sacar(double valorSacar) {
 
+        // -12 > -10-20 = -30
+        //-12 > -30
+
         double saldo = super.getSaldo();
 
-        if (saldo <= 0 && saldo - valorSacar > (this.limite * (-1))) {
+        if (saldo <= 0 &&  (this.limite * (-1)) <= (saldo - valorSacar) ) {
+            System.out.println("Saldo < 0 : " + this.limite * (-1));
+            System.out.println("Saldo < 0");
             saldo = saldo - valorSacar;
             Operacao operacao = new Operacao("Saque", valorSacar, super.getNumero());
-            editarContaNoArquivo(getNumero(), operacao);
+            editarContaNoArquivo(getNumero(), operacao, saldo);
         } else if (saldo > 0) {
-            if (valorSacar < saldo + this.limite) {
+            if (valorSacar <= (saldo + this.limite)) {
+
+                System.out.println("Saldo > 0");
+
                 saldo = saldo - valorSacar;
                 Operacao operacao = new Operacao("Saque", valorSacar, super.getNumero());
-                editarContaNoArquivo(getNumero(), operacao);
+                editarContaNoArquivo(getNumero(), operacao, saldo);
             } else {
                 throw new Error("Valor a sacar excedeu o limite");
             }
@@ -81,7 +92,7 @@ public class Corrente extends Conta {
         return 0;
     }
 
-    public void editarContaNoArquivo(int numeroConta, Operacao operacao) {
+    public void editarContaNoArquivo(int numeroConta, Operacao operacao, double novoSaldo) {
         try {
             List<String> linhas = Files.readAllLines(Paths.get("clientes.txt"), StandardCharsets.UTF_8);
 
@@ -89,8 +100,8 @@ public class Corrente extends Conta {
                 if (linhas.get(i).startsWith("Conta Corrente: Número: " + numeroConta)) {
                     String[] partes = linhas.get(i).split(", Saldo: ");
                     String[] saldoParte = partes[1].split(", Cliente: ");
-                    String novoSaldo = Double.toString(Double.parseDouble(saldoParte[0]) - operacao.getValor());
-                    linhas.set(i, partes[0] + ", Saldo: " + novoSaldo + ", Cliente: " + saldoParte[1]);
+                    String newSaldo = Double.toString(novoSaldo);
+                    linhas.set(i, partes[0] + ", Saldo: " + newSaldo + ", Cliente: " + saldoParte[1]);
 
                     linhas.add(operacao.infoOperacao());
 

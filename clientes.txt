@@ -6,7 +6,7 @@ Conta Poupanca: Número: 4, Saldo: 0.0, Cliente: 123, Rendimento Mensal: 0.0
 
 Conta Poupanca: Número: 5, Saldo: 0.0, Cliente: 123, Rendimento Mensal: 0.0
 
-Conta Corrente: Número: 6, Saldo: -21.0, Cliente: 123, Limite de Credito: 12.0
+Conta Corrente: Número: 6, Saldo: 10.0, Cliente: 123, Limite de Credito: 12.0
 
 Conta Poupanca: Número: 7, Saldo: 0.0, Cliente: 123, Rendimento Mensal: 0.0
 
@@ -14,11 +14,17 @@ Conta Poupanca: Número: 8, Saldo: 0.0, Cliente: 123, Rendimento Mensal: 0.0
 
 Conta Poupanca: Número: 9, Saldo: 0.0, Cliente: 123, Rendimento Mensal: 0.0
 
-Conta Corrente: Número: 10, Saldo: -200.0, Cliente: 123, Limite de Credito: 100.0  
+Conta Corrente: Número: 10, Saldo: -96.0, Cliente: 123, Limite de Credito: 100.0  
 
-Conta Corrente: Número: 10, Saldo: -100.0, Cliente: 98765432198, Limite de Credito: 100.0 
+Operacao Saque, Valor: 10.0, Data: Thu Jan 27 20:47:39 BRT 2024, Conta: 10.
+Operacao Deposito, Valor: 1.0, Data: Thu Jan 27 21:17:37 BRT 2024, Conta: 6.
+Operacao Deposito, Valor: 16.0, Data: Thu Jun 27 21:58:55 BRT 2024, Conta: 10.
+Operacao Deposito, Valor: 10.0, Data: Thu Jun 27 22:03:25 BRT 2024, Conta: 6.
+Operacao Saque, Valor: 20.0, Data: Fri Jun 28 08:44:39 BRT 2024, Conta: 6.
 
-Operacao Saque, Valor: 10.0, Data: Thu Jun 27 20:47:39 BRT 2024, Conta: 10
-Operacao Deposito, Valor: 1.0, Data: Thu Jun 27 21:17:37 BRT 2024, Conta: 6
-Operacao Deposito, Valor: 16.0, Data: Thu Jun 27 21:58:55 BRT 2024, Conta: 10
-Operacao Deposito, Valor: 10.0, Data: Thu Jun 27 22:03:25 BRT 2024, Conta: 6
+Conta Renda Fixa: Número: 11, Saldo: 10.0, Cliente: 123, Imposto: 0.15, Taxa Fixa: 20.0, Rendimento Mensal: 0.0, Valor do Rendimento Mensal: 0.005
+
+
+Conta Investimento: Número: 12, Saldo: 15.5, Cliente: 123, Imposto: 0.225, Taxa Fixa: 0.01, Rendimento Mensal: 20.0, Valor do Rendimento Mensal: 0.002
+
+

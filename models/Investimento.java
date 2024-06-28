@@ -74,14 +74,17 @@ public class Investimento extends Conta {
 
         double saldo = super.getSaldo();
 
-        if(valorSacar - saldo > 0){
+        if(saldo > (valorSacar + (this.rendimentoMensal * this.imposto))){
 
-            saldo -= (this.rendimentoMensal * this.imposto);
+            System.out.println("Imposto "+ this.rendimentoMensal * this.imposto);
+            saldo = saldo - (this.rendimentoMensal * this.imposto);
+            System.out.println("Saldo com imposto "+ saldo);
 
-            saldo -= valorSacar;
+            saldo = saldo - valorSacar;
+            System.out.println("Saldo com imposto e saque "+ saldo);
 
             Operacao operacao = new Operacao("Saque", valorSacar, super.getNumero());
-            editarContaNoArquivo(getNumero(), operacao);
+            editarContaNoArquivo(getNumero(), operacao, saldo);
                         
         }else if(saldo == 0){
             throw new Error("Conta sem saldo");
@@ -103,7 +106,7 @@ public class Investimento extends Conta {
         super.setSaldo(saldo);
 
         Operacao operacao = new Operacao("Deposito", valorDepositar, super.getNumero());
-        editarContaNoArquivo(getNumero(), operacao);
+        editarContaNoArquivo(getNumero(), operacao, saldo);
               
         return saldo;
     }
@@ -124,7 +127,7 @@ public class Investimento extends Conta {
             this.rendimentoMensal = rendimento;
 
             Operacao operacao = new Operacao("Rendimento", rendimento, super.getNumero());
-                editarContaNoArquivo(getNumero(), operacao);
+                editarContaNoArquivo(getNumero(), operacao, saldo);
 
 
             if(rendimento > 0){
@@ -135,7 +138,7 @@ public class Investimento extends Conta {
                 super.setSaldo(saldo);
 
                 Operacao opera = new Operacao("Taxa", valorTaxa, super.getNumero());
-                editarContaNoArquivo(getNumero(), opera);
+                editarContaNoArquivo(getNumero(), opera, saldo);
             }
             
         }
@@ -147,7 +150,7 @@ public class Investimento extends Conta {
         super.operacoes.add(new Operacao(tipo, valor, numConta));
     }
 
-    public void editarContaNoArquivo(int numeroConta, Operacao operacao) {
+    public void editarContaNoArquivo(int numeroConta, Operacao operacao, double novoSaldo) {
         try {
             List<String> linhas = Files.readAllLines(Paths.get("clientes.txt"), StandardCharsets.UTF_8);
 
@@ -155,8 +158,8 @@ public class Investimento extends Conta {
                 if (linhas.get(i).startsWith("Conta Investimento: Número: " + numeroConta)) {
                     String[] partes = linhas.get(i).split(", Saldo: ");
                     String[] saldoParte = partes[1].split(", Cliente: ");
-                    String novoSaldo = Double.toString(Double.parseDouble(saldoParte[0]) - operacao.getValor());
-                    linhas.set(i, partes[0] + ", Saldo: " + novoSaldo + ", Cliente: " + saldoParte[1]);
+                    String newSaldo = Double.toString(novoSaldo);
+                    linhas.set(i, partes[0] + ", Saldo: " + newSaldo + ", Cliente: " + saldoParte[1]);
 
                     linhas.add(operacao.infoOperacao());
 

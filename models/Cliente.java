@@ -5,7 +5,10 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -204,9 +207,16 @@ public class Cliente {
         return new Investimento(cliente, numero, saldo, imposto, taxaFixa, rendimentoMensal, valorRendimentoMensal);
     }
 
-    public static Cliente extrairCliente(String cpf) {
+    public static Cliente extrairCliente(String line) {
+        System.out.println("Entrou");
+        String inicioMarcador = "Cliente: ";
+        String fimMarcador = ",";
+
+        String cpf = (extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador));
+        
         List<Cliente> clientes = lerClientesDoArquivo();
         for (Cliente cliente : clientes) {
+            System.out.println("Cpf da extracao: " + cpf);
             if (cliente.getCpf().equals(cpf)) {
                 return cliente;
             }
