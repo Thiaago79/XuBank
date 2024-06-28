@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class RendaFixa extends Conta{
     private double imposto;
@@ -20,7 +21,8 @@ public class RendaFixa extends Conta{
         this.valorRendimentoMensal = 0.005;
         this.imposto = 0.15;
         this.taxaFixa = 20;
-        this.rendimentoMensal = 0;
+        Random random = new Random();
+        this.rendimentoMensal = random.nextDouble() * (0.0035) + 0.005;
     }
 
     public RendaFixa(Cliente cliente, int numero, double saldo, double imposto, double taxaFixa, double rendimentoMensal, double valorRendimentoMensal) {
@@ -168,10 +170,8 @@ public class RendaFixa extends Conta{
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
-
+    
     @Override
     public String infoConta() {
         return "Conta Renda Fixa: " + super.infoConta() + ", Imposto: " + imposto + ", Taxa Fixa: " + taxaFixa + ", Rendimento Mensal: " + rendimentoMensal + ", Valor do Rendimento Mensal: " + valorRendimentoMensal + "\n";

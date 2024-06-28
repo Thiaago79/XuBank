@@ -79,6 +79,18 @@ public abstract class Conta {
         return maiorAtual + 1;
     }
 
+    public static boolean contaPertence(Conta conta, Cliente cliente){
+        List<Conta> contas = lerContasDeArquivo();
+
+        for(Conta c : contas){
+            if(conta.equals(c) && c.cliente.equals(cliente)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static void extratoConta(int numConta) {
         List<Operacao> operacoes = lerOperacoesDeArquivo();
         System.out.println("Extrato do Último Mês");
@@ -108,74 +120,135 @@ public abstract class Conta {
         }
     }
 
-    public static void impriConta(){
-        List<Conta> contas = lerContasDeArquivo();
-
-        for(Conta conta : contas){
-            System.out.println("Cliente Conta: "+conta.getCliente());
-        }
-    }
-
     public static Cliente clienteRico() {
         List<Cliente> clientes = Cliente.lerClientesDoArquivo();
         List<Conta> contas = lerContasDeArquivo();
-
-        double maiorSaldo = 0;
+    
+        double maiorSaldo = Double.NEGATIVE_INFINITY;
         Cliente clienteRico = null;
     
-        // Itera sobre todos os clientes
         for (Cliente cliente : clientes) {
             double saldoTotalCliente = 0;
-            System.out.println("Nome Rico: " + cliente.getNome());
     
-            // Itera sobre todas as contas
             for (Conta conta : contas) {
                 if (conta.getCliente() != null && conta.getCliente().getCpf().equals(cliente.getCpf())) {
                     saldoTotalCliente += conta.getSaldo();
-                    System.out.println("Conta Saldo: " + conta.getSaldo());
-                    System.out.println("Cliente: " + conta.getCliente().getCpf());
-                    System.out.println("Saldo Rico: " + saldoTotalCliente);
                 }
             }
     
-            // Verifica se o saldo total do cliente atual é maior que o maior saldo registrado até agora
             if (saldoTotalCliente > maiorSaldo) {
                 maiorSaldo = saldoTotalCliente;
                 clienteRico = cliente;
             }
         }
     
-        // Após percorrer todos os clientes e contas, imprime o cliente com o maior saldo ou avisa se nenhum cliente foi encontrado
         if (clienteRico != null) {
-            System.out.println("Cliente com maior saldo: " + clienteRico.getNome());
+            System.out.println("Cliente com maior saldo: " + clienteRico.getNome() + ", Saldo: " + maiorSaldo);
         } else {
             System.out.println("Nenhum cliente encontrado.");
         }
     
-        // Retorna o cliente com o maior saldo encontrado (ou null se nenhum cliente foi encontrado)
         return clienteRico;
     }
 
+    public static Cliente clientePobre() {
+        List<Cliente> clientes = Cliente.lerClientesDoArquivo();
+        List<Conta> contas = lerContasDeArquivo();
+    
+        double menorSaldo = Double.POSITIVE_INFINITY;
+        Cliente clientePobre = null;
+    
+        for (Cliente cliente : clientes) {
+            double saldoTotalCliente = 0;
+    
+            for (Conta conta : contas) {
+                if (conta.getCliente() != null && conta.getCliente().getCpf().equals(cliente.getCpf())) {
+                    saldoTotalCliente += conta.getSaldo();
+                }
+            }
+    
+            if (saldoTotalCliente < menorSaldo) {
+                menorSaldo = saldoTotalCliente;
+                clientePobre = cliente;
+            }
+        }
+    
+        if (clientePobre != null) {
+            System.out.println("Cliente com menor saldo: " + clientePobre.getNome() + ", Saldo: " + menorSaldo);
+        } else {
+            System.out.println("Nenhum cliente encontrado.");
+        }
+    
+        return clientePobre;
+    }
 
-    public static String validarTipoConta(int numeroConta) {
+
+    public static void saldoMedio() {
         List<Conta> contas = lerContasDeArquivo();
 
+        double totalCorrente = 0;
+        double totalPoupanca = 0;
+        double totalRendaFixa = 0;
+        double totalInvestimento = 0;
+        int countCorrente = 0;
+        int countPoupanca = 0;
+        int countRendaFixa = 0;
+        int countInvestimento = 0;
+
         for (Conta conta : contas) {
-            if (conta.getNumero() == numeroConta) {
-                if (conta instanceof Corrente) {
-                    Corrente contaCor = new Corrente(null, numeroConta);
-                    return "Corrente";
-                } else if (conta instanceof Poupanca) {
-                    return "Poupanca";
-                } else if (conta instanceof RendaFixa) {
-                    return "Renda Fixa";
-                } else if (conta instanceof Investimento) {
-                    return "Investimento";
-                }
+            if (conta instanceof Corrente) {
+                totalCorrente += conta.getSaldo();
+                countCorrente++;
+            } else if (conta instanceof Poupanca) {
+                totalPoupanca += conta.getSaldo();
+                countPoupanca++;
+            } else if (conta instanceof RendaFixa) {
+                totalRendaFixa += conta.getSaldo();
+                countRendaFixa++;
+            } else if (conta instanceof Investimento) {
+                totalInvestimento += conta.getSaldo();
+                countInvestimento++;
             }
         }
 
-        return "Conta não encontrada";
+        double saldoMedioCorrente = countCorrente > 0 ? totalCorrente / countCorrente : 0;
+        double saldoMedioPoupanca = countPoupanca > 0 ? totalPoupanca / countPoupanca : 0;
+        double saldoMedioRendaFixa = countRendaFixa > 0 ? totalRendaFixa / countRendaFixa : 0;
+        double saldoMedioInvestimento = countInvestimento > 0 ? totalInvestimento / countInvestimento : 0;
+
+        System.out.println("Saldo médio em Conta Corrente: R$" + saldoMedioCorrente);
+        System.out.println("Saldo médio em Poupança: R$" + saldoMedioPoupanca);
+        System.out.println("Saldo médio em Renda Fixa: R$" + saldoMedioRendaFixa);
+        System.out.println("Saldo médio em Investimento: R$" + saldoMedioInvestimento);
+    }
+
+
+    public static void saldoGeralContas() {
+
+        List<Conta> contas = lerContasDeArquivo();
+
+        double saldoTotalCorrente = 0;
+        double saldoTotalPoupanca = 0;
+        double saldoTotalRendaFixa = 0;
+        double saldoTotalInvestimento = 0;
+
+        for (Conta conta : contas) {
+            if (conta instanceof Corrente) {
+                saldoTotalCorrente += conta.getSaldo();
+            } else if (conta instanceof Poupanca) {
+                saldoTotalPoupanca += conta.getSaldo();
+            } else if (conta instanceof RendaFixa) {
+                saldoTotalRendaFixa += conta.getSaldo();
+            } else if (conta instanceof Investimento) {
+                saldoTotalInvestimento += conta.getSaldo();
+            }
+        }
+
+        System.out.println("Saldo geral total por tipo de conta:");
+        System.out.println("Corrente: " + saldoTotalCorrente);
+        System.out.println("Poupança: " + saldoTotalPoupanca);
+        System.out.println("Renda Fixa: " + saldoTotalRendaFixa);
+        System.out.println("Investimento: " + saldoTotalInvestimento);
     }
 
     public void editarContaNoArquivo(int numeroConta, double novoSaldo) {
@@ -194,7 +267,6 @@ public abstract class Conta {
             e.printStackTrace();
         }
 
-        // Escreve todas as linhas de volta no arquivo
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivo))) {
             for (String linha : linhas) {
                 writer.write(linha + "\n");
@@ -285,8 +357,6 @@ public abstract class Conta {
         String inicioMarcador = "Cliente: ";
         String fimMarcador = ", ";
         String cpf = extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador);
-        System.out.println(cpf);
-
 
         for (Cliente cliente : clientes) {
             if (cliente.getCpf().equals(cpf)) {
@@ -336,8 +406,7 @@ public abstract class Conta {
         for (String parte : partes) {
             if (parte.startsWith("Rendimento Mensal: ")) {
                 String valorRendimento = parte.substring("Rendimento Mensal: ".length()).trim();
-                // Remover caracteres não numéricos extras, se houver
-                valorRendimento = valorRendimento.replaceAll("[^\\d.]", ""); // Remove tudo exceto dígitos e ponto
+                valorRendimento = valorRendimento.replaceAll("[^\\d.]", "");
                 try {
                     return Double.parseDouble(valorRendimento);
                 } catch (NumberFormatException e) {
@@ -345,7 +414,7 @@ public abstract class Conta {
                 }
             }
         }
-        return 0.0; // Valor padrão se não encontrar ou ocorrer erro na conversão
+        return 0.0;
     }
 
     protected static String extrairValorEntreMarcadores(String linha, String marcadorInicio, String marcadorFim) {
@@ -356,46 +425,12 @@ public abstract class Conta {
             throw new IllegalArgumentException("Marcador inicial não encontrado na linha: " + linha);
         }
         if (fimIndex < 0) {
-            return linha.substring(inicioIndex).trim(); // Retorna o resto da linha se o marcador final não for encontrado
+            return linha.substring(inicioIndex).trim();
         }
 
         return linha.substring(inicioIndex, fimIndex).trim();
     }
 
-
-    public static List<Cliente> lerClientesDoArquivo() {
-        List<Cliente> clientes = new ArrayList<>();
-    
-        try (BufferedReader reader = new BufferedReader(new FileReader("clientes.txt"))) {
-            String linha;
-    
-            while ((linha = reader.readLine()) != null) {
-                if (linha.startsWith("Nome: ") && linha.contains("CPF: ") && linha.contains("Senha: ")) {
-                    String[] partes = linha.split(", ");
-                    String nome = partes[0].substring("Nome: ".length()).trim();
-                    String cpf = partes[1].substring("CPF: ".length()).trim();
-                    String senha = partes[2].substring("Senha: ".length()).trim();
-    
-                    Cliente cliente = new Cliente(nome, cpf, senha);
-                    clientes.add(cliente);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    
-        return clientes;
-    }
-
-    public static Cliente pesquisarCliente(String cpf) {
-        List<Cliente> clientes = lerClientesDoArquivo();
-        for (Cliente cliente : clientes) {
-            if (cliente.getCpf().equals(cpf)) {
-                return cliente;
-            }
-        }
-        return null;
-    }
 
     public static List<Operacao> lerOperacoesDeArquivo() {
         List<Operacao> operacoes = new ArrayList<>();
@@ -456,7 +491,6 @@ public abstract class Conta {
         return Integer.parseInt(extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador));
     }
     
-
     public String infoConta() {
         return "Número: " + numero + ", Saldo: " + saldo + ", Cliente: " + cliente.getCpf();
     }

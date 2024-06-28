@@ -29,7 +29,6 @@ public class Poupanca extends Conta {
         this.rendimentoMensal = rendimentoMensal;
     }
 
-    @Override
     public double sacar(double valorSacar) {
         double saldo = super.getSaldo();
 
@@ -46,7 +45,6 @@ public class Poupanca extends Conta {
         return saldo;
     }
 
-    @Override
     public double depositar(double valorDepositar) {
         double saldo = super.getSaldo();
 
@@ -59,7 +57,6 @@ public class Poupanca extends Conta {
         return saldo;
     }
 
-    @Override
     public double rendimentoMensal() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
@@ -104,7 +101,6 @@ public class Poupanca extends Conta {
 
     }
 
-    @Override
     public void extrato(String tipo, double valor, int numConta) {
         super.operacoes.add(new Operacao(tipo, valor, numConta));
     }

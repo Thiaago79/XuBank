@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class Investimento extends Conta {
     private double imposto;
@@ -19,7 +20,8 @@ public class Investimento extends Conta {
         this.valorRendimentoMensal = 0.002;
         this.imposto = 0.225;
         this.taxaFixa = 0.01;
-        this.rendimentoMensal = 0;        
+        Random random = new Random();
+        this.rendimentoMensal = random.nextDouble() * (0.021) - 0.006;   
     }
 
     public Investimento(Cliente cliente, int numero, double saldo,double imposto, double taxaFixa, double rendimentoMensal, double valorRendimentoMensal) {

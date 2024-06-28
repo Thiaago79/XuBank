@@ -5,10 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -144,69 +141,6 @@ public class Cliente {
         return clientes;
     }
 
-    public static List<Conta> lerContasDeArquivo() {
-        List<Conta> contas = new ArrayList<>();
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(new FileReader("clientes.txt"));
-            String line = reader.readLine();
-            while (line != null) {
-                if (line.startsWith("Conta Corrente")) {
-                    contas.add(criarContaCorrente(line));
-                } else if (line.startsWith("Conta Poupanca")) {
-                    contas.add(criarContaPoupanca(line));
-                } else if (line.startsWith("Conta Renda Fixa")) {
-                    contas.add(criarContaRendaFixa(line));
-                } else if (line.startsWith("Conta Investimento")) {
-                    contas.add(criarContaInvestimento(line));
-                }
-                line = reader.readLine();
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return contas;
-    }
-
-    private static Conta criarContaCorrente(String line) {
-        Cliente cliente = extrairCliente(line);
-        int numero = extrairNumeroConta(line);
-        double saldo = extrairSaldo(line);
-        double limite = extrairLimiteCredito(line);
-        return new Corrente(cliente, numero, saldo, limite);
-    }
-
-    private static Conta criarContaPoupanca(String line) {
-        Cliente cliente = extrairCliente(line);
-        int numero = extrairNumeroConta(line);
-        double saldo = extrairSaldo(line);
-        
-        return new Poupanca(cliente, numero, saldo);
-    }
-
-    private static Conta criarContaRendaFixa(String line) {
-        Cliente cliente = extrairCliente(line);
-        int numero = extrairNumeroConta(line);
-        double saldo = extrairSaldo(line);
-        double imposto = extrairImposto(line);
-        double taxaFixa = extrairTaxaFixa(line);
-        double rendimentoMensal = extrairRendimentoMensal(line);
-        double valorRendimentoMensal = extrairValorRendimentoMensal(line);
-        return new RendaFixa(cliente, numero, saldo, imposto, taxaFixa, rendimentoMensal, valorRendimentoMensal);
-    }
-
-    private static Conta criarContaInvestimento(String line) {
-        Cliente cliente = extrairCliente(line);
-        int numero = extrairNumeroConta(line);
-        double saldo = extrairSaldo(line);
-        double imposto = extrairImposto(line);
-        double taxaFixa = extrairTaxaFixa(line);
-        double rendimentoMensal = extrairRendimentoMensal(line);
-        double valorRendimentoMensal = extrairValorRendimentoMensal(line);
-        return new Investimento(cliente, numero, saldo, imposto, taxaFixa, rendimentoMensal, valorRendimentoMensal);
-    }
-
     public static Cliente extrairCliente(String line) {
         System.out.println("Entrou");
         String inicioMarcador = "Cliente: ";
@@ -222,57 +156,6 @@ public class Cliente {
             }
         }
         return null;
-    }
-
-    private static int extrairNumeroConta(String line) {
-        String inicioMarcador = "Número: ";
-        String fimMarcador = ", Saldo: ";
-        return Integer.parseInt(extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador));
-    }
-
-    private static double extrairSaldo(String line) {
-        String inicioMarcador = "Saldo: ";
-        String fimMarcador = ", Cliente: ";
-        return Double.parseDouble(extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador));
-    }
-
-    private static double extrairLimiteCredito(String line) {
-        String inicioMarcador = "Limite de Credito: ";
-        return Double.parseDouble(extrairValorEntreMarcadores(line, inicioMarcador, ""));
-    }
-
-    private static double extrairImposto(String line) {
-        String inicioMarcador = "Imposto: ";
-        String fimMarcador = ", Taxa Fixa: ";
-        return Double.parseDouble(extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador));
-    }
-
-    private static double extrairTaxaFixa(String line) {
-        String inicioMarcador = "Taxa Fixa: ";
-        String fimMarcador = ", Rendimento Mensal: ";
-        return Double.parseDouble(extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador));
-    }
-
-    private static double extrairRendimentoMensal(String line) {
-        String inicioMarcador = "Rendimento Mensal: ";
-        String fimMarcador = ", Valor do Rendimento Mensal";
-        return Double.parseDouble(extrairValorEntreMarcadores(line, inicioMarcador, fimMarcador));
-    }
-
-    private static double extrairValorRendimentoMensal(String line) {
-        String[] partes = line.split(", ");
-        for (String parte : partes) {
-            if (parte.startsWith("Rendimento Mensal: ")) {
-                String valorRendimento = parte.substring("Rendimento Mensal: ".length()).trim();
-                valorRendimento = valorRendimento.replaceAll("[^\\d.]", ""); 
-                try {
-                    return Double.parseDouble(valorRendimento);
-                } catch (NumberFormatException e) {
-                    System.err.println("Erro ao converter rendimento mensal: " + e.getMessage());
-                }
-            }
-        }
-        return 0.0;
     }
 
     protected static String extrairValorEntreMarcadores(String linha, String marcadorInicio, String marcadorFim) {

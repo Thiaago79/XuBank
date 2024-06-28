@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Cadastro de Clientes");
+        System.out.println("Interface");
         System.out.println("--------------------");
 
         while (true) {
@@ -42,18 +42,20 @@ public class Main {
 
                     String tipoConta = scanner.nextLine();
 
-                    Cliente cliente = Cliente.pesquisarCliente(cpf); // Usar a função modificada
+                    Cliente cliente = Cliente.pesquisarCliente(cpf);
                     if (cliente != null) {
                         switch (tipoConta) {
                             case "1":
                                 System.out.print("Digite o valor do crédito especial (limite): ");
                                 double limite = 0.0;
-                                try {
-                                    limite = Double.parseDouble(scanner.next());
+                                try {                                    
+                                    while (limite > 0) {
+                                        limite = Double.parseDouble(scanner.next());
+                                    }
                                 } catch (NumberFormatException e) {
                                     System.out.println("Valor inválido para o limite. Utilizando valor padrão (0.0).");
                                 }
-                                scanner.nextLine(); // Limpar o buffer após ler o número
+                                scanner.nextLine();
 
                                 Corrente contaCorrente = new Corrente(cliente, limite);
                                 cliente.criarConta(contaCorrente);
@@ -90,7 +92,7 @@ public class Main {
                 String senha = scanner.nextLine();
 
                 if (Cliente.senhaExiste(cpf, senha)) {
-                    Cliente cliente = Cliente.pesquisarCliente(cpf); // Usar a função modificada
+                    Cliente cliente = Cliente.pesquisarCliente(cpf);
                     if (cliente != null) {
                         System.out.println("Bem-vindo, " + cliente.getNome() + "! Escolha uma opção:");
                         System.out.println("1 - Sacar");
@@ -106,7 +108,7 @@ public class Main {
                                 int numeroConta = Integer.parseInt(scanner.nextLine());
                                 Conta conta = Conta.pesquisarConta(numeroConta);
 
-                                if (conta != null) {
+                                if (conta != null && Conta.contaPertence(conta, cliente)) {
                                     if (conta instanceof Corrente) {
                                         Corrente cont = (Corrente) conta;
                                         System.out.println("Saldo: " + cont.getSaldo());
@@ -199,111 +201,51 @@ public class Main {
                                         System.out.println("Tipo de conta não reconhecido.");
                                     }
                                 } else {
-                                    System.out.println("Conta não encontrada.");
+                                    System.out.println("Conta não encontrada ou nao pertence a você");
                                 }
                                 break;
                             case "2":
-                                System.out.print("Digite o número da conta: ");
-                                int num = Integer.parseInt(scanner.nextLine());
-                                Conta con = Conta.pesquisarConta(num);
-
-                                if (con != null) {
-                                    if (con instanceof Corrente) {
-                                        Corrente cont = (Corrente) con;
-                                        System.out.println("Saldo: " + cont.getSaldo());
-                                        System.out.print("Digite o valor que deseja depositar: ");
-                                        String valorDepositoStr = scanner.nextLine();
-
-                                        if (!valorDepositoStr.isEmpty()) {
-                                            try {
-                                                double valorDeposito = Double.parseDouble(valorDepositoStr);
-                                                cont.depositar(valorDeposito);
-                                                System.out.println(
-                                                        "Deposito de R$" + valorDeposito + " realizado com sucesso.");
-                                                System.out.println("Novo saldo: R$" + cont.getSaldo());
-                                            } catch (NumberFormatException e) {
-                                                System.out.println(
-                                                        "Valor de Deposito inválido. Certifique-se de digitar um valor numérico válido.");
-                                            } catch (Error e) {
-                                                System.out.println(e.getMessage());
-                                            }
+                            System.out.print("Digite o número da conta: ");
+                            int num = Integer.parseInt(scanner.nextLine());
+                            Conta con = Conta.pesquisarConta(num);
+                        
+                            if (con != null && Conta.contaPertence(con, cliente)) {
+                                System.out.println("Saldo: " + con.getSaldo());
+                                System.out.print("Digite o valor que deseja depositar: ");
+                                String valorDepositoStr = scanner.nextLine();
+                        
+                                if (!valorDepositoStr.isEmpty()) {
+                                    try {
+                                        double valorDeposito = Double.parseDouble(valorDepositoStr);
+                                        double novoSaldo = 0;
+                        
+                                        if (con instanceof Corrente) {
+                                            novoSaldo = ((Corrente) con).depositar(valorDeposito);
+                                        } else if (con instanceof Poupanca) {
+                                            novoSaldo = ((Poupanca) con).depositar(valorDeposito);
+                                        } else if (con instanceof RendaFixa) {
+                                            novoSaldo = ((RendaFixa) con).depositar(valorDeposito);
+                                        } else if (con instanceof Investimento) {
+                                            novoSaldo = ((Investimento) con).depositar(valorDeposito);
                                         } else {
-                                            System.out.println("Valor de deposito não pode estar vazio.");
+                                            System.out.println("Tipo de conta não reconhecido.");
+                                            break;
                                         }
-                                    } else if (con instanceof Poupanca) {
-                                        Poupanca cont = (Poupanca) con;
-                                        System.out.println("Saldo: " + cont.getSaldo());
-                                        System.out.print("Digite o valor que deseja depositar: ");
-                                        String valorDepositoStr = scanner.nextLine();
-
-                                        if (!valorDepositoStr.isEmpty()) {
-                                            try {
-                                                double valorDeposito = Double.parseDouble(valorDepositoStr);
-                                                cont.depositar(valorDeposito);
-                                                System.out.println(
-                                                        "Deposito de R$" + valorDeposito + " realizado com sucesso.");
-                                                System.out.println("Novo saldo: R$" + cont.getSaldo());
-                                            } catch (NumberFormatException e) {
-                                                System.out.println(
-                                                        "Valor de deposito inválido. Certifique-se de digitar um valor numérico válido.");
-                                            } catch (Error e) {
-                                                System.out.println(e.getMessage());
-                                            }
-                                        } else {
-                                            System.out.println("Valor de deposito não pode estar vazio.");
-                                        }
-                                    } else if (con instanceof RendaFixa) {
-                                        RendaFixa cont = (RendaFixa) con;
-                                        System.out.println("Saldo: " + cont.getSaldo());
-                                        System.out.print("Digite o valor que deseja depositar: ");
-                                        String valorDepositoStr = scanner.nextLine();
-
-                                        if (!valorDepositoStr.isEmpty()) {
-                                            try {
-                                                double valorDeposito = Double.parseDouble(valorDepositoStr);
-                                                //cont.depositar(valorDeposito);
-                                                double sald = cont.depositar(valorDeposito);
-                                                System.out.println(
-                                                        "Deposito de R$" + valorDeposito + " realizado com sucesso.");
-                                                System.out.println("Novo saldo: R$" + sald);
-                                            } catch (NumberFormatException e) {
-                                                System.out.println(
-                                                        "Valor de deposito inválido. Certifique-se de digitar um valor numérico válido.");
-                                            } catch (Error e) {
-                                                System.out.println(e.getMessage());
-                                            }
-                                        } else {
-                                            System.out.println("Valor de deposito não pode estar vazio.");
-                                        }
-                                    } else if (con instanceof Investimento) {
-                                        Investimento cont = (Investimento) con;
-                                        System.out.println("Saldo: " + cont.getSaldo());
-                                        System.out.print("Digite o valor que deseja depositar: ");
-                                        String valorDepositoStr = scanner.nextLine();
-
-                                        if (!valorDepositoStr.isEmpty()) {
-                                            try {
-                                                double valorDeposito = Double.parseDouble(valorDepositoStr);
-                                                cont.depositar(valorDeposito);
-                                                System.out.println(
-                                                        "Deposito de R$" + valorDeposito + " realizado com sucesso.");
-                                                System.out.println("Novo saldo: R$" + cont.getSaldo());
-                                            } catch (NumberFormatException e) {
-                                                System.out.println(
-                                                        "Valor de deposito inválido. Certifique-se de digitar um valor numérico válido.");
-                                            } catch (Error e) {
-                                                System.out.println(e.getMessage());
-                                            }
-                                        } else {
-                                            System.out.println("Valor de deposito não pode estar vazio.");
-                                        }
-                                    } else {
-                                        System.out.println("Tipo de conta não reconhecido.");
+                        
+                                        System.out.println("Depósito de R$" + valorDeposito + " realizado com sucesso.");
+                                        System.out.println("Novo saldo: R$" + novoSaldo);
+                                    } catch (NumberFormatException e) {
+                                        System.out.println("Valor de depósito inválido. Certifique-se de digitar um valor numérico válido.");
+                                    } catch (Error e) {
+                                        System.out.println(e.getMessage());
                                     }
                                 } else {
-                                    System.out.println("Conta não encontrada.");
+                                    System.out.println("Valor de depósito não pode estar vazio.");
                                 }
-                                break;
+                            } else {
+                                System.out.println("Conta não encontrada ou conta nao pertence a você");
+                            }
+                            break;
                             case "3":
                                 System.out.print("Digite o número da conta: ");
                                 int n = Integer.parseInt(scanner.nextLine());
@@ -340,28 +282,23 @@ public class Main {
                 }
             } else if (resposta.equals("4")) {
                 System.out.println("Bem-vindo, XuBank escolha uma opção:");
-                System.out.println("1 - Saldo Médio de Cada Tipo de Conta");
-                System.out.println("2 - Cliente com maior saldo total");
-                System.out.println("3 - Cliente com menor saldo total");
+                System.out.println("1 - Saldo Geral por Tipo de Conta");
+                System.out.println("2 - Saldo Médio por Tipo de Conta");
+                System.out.println("3 - Cliente com maior saldo total");
+                System.out.println("4 - Cliente com menor saldo total");
                 String op = scanner.nextLine();
-                //imprimirConta(lerContasDeArquivo());
                 switch (op) {
                     case "1":
-
+                        Conta.saldoGeralContas();
                         break;
                     case "2":
-                        Conta.clienteRico();
-                        
-
+                        Conta.saldoMedio();
                         break;
                     case "3":
-                        // //Cliente clientePobre = clientePobre();
-
-                        // if (clientePobre != null) {
-                        //     System.out.println("Cliente com menor saldo: " + clientePobre.getNome());
-                        // } else {
-                        //     System.out.println("Nenhum cliente encontrado.");
-                        // }
+                        Conta.clienteRico();
+                        break;
+                    case "4":
+                        Conta.clientePobre();
                         break;                   
                 }
             } else if (resposta.equals("0")) {
